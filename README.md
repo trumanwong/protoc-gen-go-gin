@@ -141,6 +141,10 @@ func main() {
 }
 ```
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/trumanwong/protoc-gen-go-gin/blob/main/LICENSE) file for details.
+
 ## Acknowledgements
 
 The following project had particular influence on protoc-gen-go-gin's design.
