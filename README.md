@@ -119,18 +119,19 @@ import (
 	"github.com/trumanwong/gin-transport/transport"
 )
 
-func main()  {
+func main() {
 	engine := gin.New()
 	engine.Use(gin.Recovery())
-	server := transport.NewServer(engine, transport.Crypto{
-		Enable:         false,
+	server := transport.NewServer(engine, []*transport.GroupMiddleware{
+		// Middleware for operation
+		//{
+		//	Middleware: func(ctx *gin.Context) {
+		//
+		//	},
+		//	Operations: []string{v1.OperationDemoGetDemo},
+		//},
 	}, []string{
 		fmt.Sprintf(":%d", 8080),
-	})
-	server.SetGroupRoutes(map[string][]gin.HandlerFunc{
-		v1.OperationDemoGetDemo: {
-			// middlewares
-        },
 	})
 	v1.RegisterDemoHTTPServer(server, v1.UnimplementedDemoServer{})
 	err := server.Run()
