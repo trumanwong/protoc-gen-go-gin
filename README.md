@@ -34,7 +34,7 @@ message GetDemoReply {}
 ``` 
 
 ```shell
-$ protoc.exe --proto_path=. --go_out=paths=source_relative:. \
+$ protoc.exe --proto_path=. --proto_path=./third_party --go_out=paths=source_relative:. \
     --go-grpc_out=paths=source_relative:. \
     --go-gin_out=paths=source_relative:. \
     --openapi_out=paths=source_relative:. \
