@@ -40,6 +40,12 @@ s.ResultError(ctx, err)
 return
 }
 {{- end}}
+if validate := reflect.ValueOf(&req).MethodByName("Validate"); validate.IsValid() {
+if err := validate.Call(nil)[0].Interface(); err != nil {
+s.ResultError(ctx, errors.New(400, "", "validate fail: " + err.(error).Error()))
+return
+}
+}
 reply, err := srv.{{.Name}}(ctx, &req)
 if err != nil {
 s.ResultError(ctx, err)

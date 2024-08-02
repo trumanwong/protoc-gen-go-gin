@@ -17,6 +17,8 @@ import (
 
 const (
 	contextPackage   = protogen.GoImportPath("context")
+	reflectPackage   = protogen.GoImportPath("reflect")
+	errorsPackage    = protogen.GoImportPath("github.com/trumanwong/gin-transport/transport/errors")
 	ginPackage       = protogen.GoImportPath("github.com/gin-gonic/gin")
 	transportPackage = protogen.GoImportPath("github.com/trumanwong/gin-transport/transport")
 )
@@ -54,7 +56,9 @@ func generateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.
 	g.P("// This is a compile-time assertion to ensure that this generated file")
 	g.P("// is compatible with the gin package it is being compiled against.")
 	g.P("var _ = new(", contextPackage.Ident("Context"), ")")
+	g.P("var _ = ", errorsPackage.Ident("New"))
 	g.P("var _ = ", ginPackage.Ident("Version"))
+	g.P("var _ = ", reflectPackage.Ident("ValueOf"))
 	g.P("var _ = ", transportPackage.Ident("SupportPackageIsVersion1"))
 	g.P()
 
@@ -225,7 +229,7 @@ func buildPathVars(path string) (res map[string]*string) {
 	if strings.HasSuffix(path, "/") {
 		fmt.Fprintf(os.Stderr, "\u001B[31mWARN\u001B[m: Path %s should not end with \"/\" \n", path)
 	}
-	pattern := regexp.MustCompile(`(?i){([a-z.0-9_\s]*)=?([^{}]*)}`)
+	pattern := regexp.MustCompile(`(?i):([a-z.0-9_\s]*)=?([^{}]*)`)
 	matches := pattern.FindAllStringSubmatch(path, -1)
 	res = make(map[string]*string, len(matches))
 	for _, m := range matches {
