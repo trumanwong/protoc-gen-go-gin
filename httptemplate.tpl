@@ -16,13 +16,19 @@ type {{.ServiceType}}HTTPServer interface {
 
 func Register{{.ServiceType}}HTTPServer(s *transport.Server, srv {{.ServiceType}}HTTPServer) {
 {{- range .Methods}}
-s.AddMethod("{{.Method}}", "{{.Path}}", Operation{{$svrType}}{{.OriginalName}}, _{{$svrType}}_{{.Name}}{{.Num}}_HTTP_Handler(s, srv))
+s.AddMethod("{{.Method}}", "{{.Path}}", _{{$svrType}}_{{.Name}}{{.Num}}_HTTP_Handler(s, srv, Operation{{$svrType}}{{.OriginalName}}))
 {{- end}}
 }
 
 {{range .Methods}}
-func _{{$svrType}}_{{.Name}}{{.Num}}_HTTP_Handler(s *transport.Server, srv {{$svrType}}HTTPServer) func(ctx *gin.Context) {
+func _{{$svrType}}_{{.Name}}{{.Num}}_HTTP_Handler(s *transport.Server, srv {{$svrType}}HTTPServer, operation string) func(ctx *gin.Context) {
 return func(ctx *gin.Context) {
+for _, f := range s.GetMiddlewares() {
+if err := f(ctx, operation); err != nil {
+s.ResultError(ctx, err)
+return
+}
+}
 var req {{.Request}}
 {{- if .HasBody}}
 if err := ctx.ShouldBindJSON(&req{{.Body}}); err != nil {
