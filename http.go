@@ -18,9 +18,9 @@ import (
 const (
 	contextPackage   = protogen.GoImportPath("context")
 	reflectPackage   = protogen.GoImportPath("reflect")
-	errorsPackage    = protogen.GoImportPath("github.com/trumanwong/gin-transport/transport/errors")
+	errorsPackage    = protogen.GoImportPath("github.com/trumanwong/gin-transport/v2/transport/errors")
 	ginPackage       = protogen.GoImportPath("github.com/gin-gonic/gin")
-	transportPackage = protogen.GoImportPath("github.com/trumanwong/gin-transport/transport")
+	transportPackage = protogen.GoImportPath("github.com/trumanwong/gin-transport/v2/transport")
 )
 
 var methodSets = make(map[string]int)

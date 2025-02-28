@@ -55,8 +55,8 @@ package v1
 import (
 	context "context"
 	gin "github.com/gin-gonic/gin"
-	transport "github.com/trumanwong/gin-transport/transport"
-	errors "github.com/trumanwong/gin-transport/transport/errors"
+	transport "github.com/trumanwong/gin-transport/v2/transport"
+	errors "github.com/trumanwong/gin-transport/v2/transport/errors"
 	reflect "reflect"
 )
 
@@ -116,7 +116,7 @@ import (
 	"fmt"
 	v1 "gin-layout/api/app/v1"
 	"github.com/gin-gonic/gin"
-	"github.com/trumanwong/gin-transport/transport"
+	"github.com/trumanwong/gin-transport/v2/transport"
 )
 
 func main() {
