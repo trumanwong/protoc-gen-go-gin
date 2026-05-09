@@ -20,6 +20,76 @@ s.AddMethod("{{.Method}}", "{{.Path}}", _{{$svrType}}_{{.Name}}{{.Num}}_HTTP_Han
 {{- end}}
 }
 
+func bindQueryWithSnakeCaseAlias(ctx *gin.Context, req interface{}) error {
+	values := ctx.Request.URL.Query()
+	if len(values) == 0 {
+		return nil
+	}
+
+	normalized := make(url.Values, len(values))
+	changed := false
+	for k, vs := range values {
+		copied := make([]string, len(vs))
+		copy(copied, vs)
+		normalized[k] = copied
+
+		lowerCamel := snakeToLowerCamel(k)
+		upperCamel := upperFirst(lowerCamel)
+		if lowerCamel != "" && lowerCamel != k {
+			if _, exists := normalized[lowerCamel]; !exists {
+				normalized[lowerCamel] = copied
+				changed = true
+			}
+		}
+		if upperCamel != "" && upperCamel != k {
+			if _, exists := normalized[upperCamel]; !exists {
+				normalized[upperCamel] = copied
+				changed = true
+			}
+		}
+	}
+
+	if changed {
+		ctx.Request.URL.RawQuery = normalized.Encode()
+	}
+	return ctx.ShouldBindQuery(req)
+}
+
+func snakeToLowerCamel(s string) string {
+	if s == "" {
+		return s
+	}
+	b := make([]byte, 0, len(s))
+	upperNext := false
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if c == '_' {
+			upperNext = true
+			continue
+		}
+		if upperNext && c >= 'a' && c <= 'z' {
+			c -= 'a' - 'A'
+		}
+		b = append(b, c)
+		upperNext = false
+	}
+	if len(b) > 0 && b[0] >= 'A' && b[0] <= 'Z' {
+		b[0] += 'a' - 'A'
+	}
+	return string(b)
+}
+
+func upperFirst(s string) string {
+	if s == "" {
+		return s
+	}
+	b := []byte(s)
+	if b[0] >= 'a' && b[0] <= 'z' {
+		b[0] -= 'a' - 'A'
+	}
+	return string(b)
+}
+
 {{range .Methods}}
 func _{{$svrType}}_{{.Name}}{{.Num}}_HTTP_Handler(s *transport.Server, srv {{$svrType}}HTTPServer, operation string) func(ctx *gin.Context) {
 return func(ctx *gin.Context) {
@@ -36,7 +106,7 @@ s.ResultError(ctx, err)
 return
 }
 {{- end}}
-if err := ctx.ShouldBindQuery(&req); err != nil {
+if err := bindQueryWithSnakeCaseAlias(ctx, &req); err != nil {
 s.ResultError(ctx, err)
 return
 }

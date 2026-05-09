@@ -18,6 +18,7 @@ import (
 const (
 	contextPackage   = protogen.GoImportPath("context")
 	reflectPackage   = protogen.GoImportPath("reflect")
+	urlPackage       = protogen.GoImportPath("net/url")
 	errorsPackage    = protogen.GoImportPath("github.com/trumanwong/gin-transport/v2/transport/errors")
 	ginPackage       = protogen.GoImportPath("github.com/gin-gonic/gin")
 	transportPackage = protogen.GoImportPath("github.com/trumanwong/gin-transport/v2/transport")
@@ -56,6 +57,7 @@ func generateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.
 	g.P("// This is a compile-time assertion to ensure that this generated file")
 	g.P("// is compatible with the gin package it is being compiled against.")
 	g.P("var _ = new(", contextPackage.Ident("Context"), ")")
+	g.P("var _ = ", urlPackage.Ident("ParseQuery"))
 	g.P("var _ = ", errorsPackage.Ident("New"))
 	g.P("var _ = ", ginPackage.Ident("Version"))
 	g.P("var _ = ", reflectPackage.Ident("ValueOf"))
